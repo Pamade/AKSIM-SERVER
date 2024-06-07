@@ -1,6 +1,8 @@
-package SERVER.SERVER;
+package SERVER.SERVER.user;
 
-public class UserRegister extends User{
+import SERVER.SERVER.user.User;
+
+public class UserRegister extends User {
 
     private String repeatPassword;
     public String getRepeatPassword(){

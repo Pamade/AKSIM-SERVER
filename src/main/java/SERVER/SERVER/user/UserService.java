@@ -1,5 +1,6 @@
-package SERVER.SERVER;
+package SERVER.SERVER.user;
 
+import SERVER.SERVER.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,7 @@ public class UserService {
     @Autowired
     private UserDAO userDAO;
     @Transactional
-    public void registerUser(UserRegister userRegister) throws ValidationError{
+    public void registerUser(UserRegister userRegister) throws ValidationError {
         final String email = userRegister.getEmail();
         final String password = userRegister.getPassword();
         final String repeatPassword = userRegister.getRepeatPassword();
