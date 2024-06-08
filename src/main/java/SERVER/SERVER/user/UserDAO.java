@@ -4,6 +4,7 @@ import SERVER.SERVER.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 
 @Repository
@@ -45,4 +48,27 @@ public class UserDAO {
         user.setId(keyHolder.getKey().longValue());
         return user;
     }
+
+    public Optional<User> findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try {
+            User user = jdbcTemplate.queryForObject(sql, new Object[]{email}, new UserRowMapper());
+            return Optional.of(user);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    private static final class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rs.getLong("id"));
+            user.setEmail(rs.getString("email"));
+            user.setPassword(rs.getString("password"));
+            // Map other fields if necessary
+            return user;
+        }
+    }
+
 }
