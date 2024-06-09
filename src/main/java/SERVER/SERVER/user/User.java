@@ -40,10 +40,7 @@ public class User implements UserDetails {
     }
 
     // Getters and setters for password
-    @Override
-    public String getPassword() {
-        return password;
-    }
+
 
     @Override
     public String getUsername() {
