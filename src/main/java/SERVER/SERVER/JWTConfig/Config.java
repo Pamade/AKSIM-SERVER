@@ -14,14 +14,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
+@RequiredArgsConstructor
 public class Config {
 
     private final UserDAO userDAO;
-
-    public Config(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
 
     @Bean
     public UserDetailsService userDetailsService(){

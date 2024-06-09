@@ -23,21 +23,13 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.authenticationProvider = authenticationProvider;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
-//        .csrf(AbstractHttpConfigurer::disable)
         http.authorizeHttpRequests((auth) -> {
-            auth.requestMatchers("").permitAll()
+            auth.requestMatchers("/api/auth/**").permitAll()
                     .anyRequest()
                     .authenticated();
-
-
         }).csrf(AbstractHttpConfigurer::disable).sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -46,34 +38,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest()
-//                        .permitAll())
-//                .csrf(AbstractHttpConfigurer::disable);
-//        return http.build();
-//    }
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests((auth) ->
-//                auth.requestMatchers("/api/createUser").permitAll())
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .formLogin(form -> form.loginPage("/api/createUser").permitAll());
-//
-//        return http.build();
-//    };
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return null;
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return false;
-            }
-        };
-    }
 }

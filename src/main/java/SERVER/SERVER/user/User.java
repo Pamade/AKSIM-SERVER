@@ -1,5 +1,6 @@
 package SERVER.SERVER.user;
 
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,11 +8,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     private long id;
 
+    // Getters and setters for email
+    @Setter
+    @Getter
     private String email;
 
+    @Setter
     private String password;
 
     private Role role;
@@ -25,18 +34,9 @@ public class User implements UserDetails {
     }
 
 
-    // Getters and setters for email
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(Role.USER.name()));
     }
 
     // Getters and setters for password
@@ -68,10 +68,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
 }
