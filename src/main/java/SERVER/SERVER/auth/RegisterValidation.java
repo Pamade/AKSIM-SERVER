@@ -27,7 +27,7 @@ public class RegisterValidation extends RegisterRequest{
     public Optional<List<String>> validationErrors (UserDAO userDAO) {
         errors.clear();
 
-        boolean isEmailCorrect = Pattern.compile(regexPattern).matcher(getEmail()).matches();
+        boolean isEmailCorrect = Pattern.compile(regexPattern).matcher(getEmail()).matches() || !getEmail().isBlank();
 
         Optional<User> findUserByEmail = userDAO.findByEmail(getEmail());
 
@@ -37,10 +37,6 @@ public class RegisterValidation extends RegisterRequest{
 
         if (!getPassword().equals(getRepeatPassword())) {
             errors.add("Passwords do not match");
-        }
-
-        if (getEmail().isBlank()) {
-            errors.add("Email can't be empty");
         }
 
         if (passwordLength > getPassword().length()) {

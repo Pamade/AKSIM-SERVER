@@ -4,19 +4,13 @@ import SERVER.SERVER.JWTConfig.JwtService;
 import SERVER.SERVER.user.Role;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
-import SERVER.SERVER.user.UserService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
@@ -48,15 +42,15 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().accessToken(jwtToken).build();
     }
 
-//    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        request.getEmail(),
-//                        request.getPassword()
-//                )
-//        );
-//        User user = userService.findByEmail(request.getEmail()).orElseThrow();
-//        var jwtToken = jwtService.generateToken(user);
-//        return AuthenticationResponse.builder().accessToken(jwtToken).build();
-//    }
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        User user = userDAO.findByEmail(request.getEmail()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().accessToken(jwtToken).build();
+    }
 }
