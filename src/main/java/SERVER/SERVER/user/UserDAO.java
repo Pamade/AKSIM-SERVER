@@ -1,5 +1,6 @@
 package SERVER.SERVER.user;
 
+import SERVER.SERVER.auth.Token;
 import SERVER.SERVER.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +48,21 @@ public class UserDAO {
         }, keyHolder);
         user.setId(keyHolder.getKey().longValue());
         return user;
+    }
+
+    public void assignTokenForUser(Token token) {
+//        INSERT INTO tokens VALUES (1, 'asdasd', 'forgotPassword', CURRENT_DATE(), 1);
+
+//        INSERT INTO tokens (value, type, expiry_date, user_id) VALUES ('asdasd', 'forgotPassword', CURRENT_DATE(), 1);
+
+        String sql = "INSERT INTO tokens (value, type, expiry_date, user_id) VALUES (?, ?, ?, ?)";
+        try {
+            jdbcTemplate.update(sql, token.getValue(), token.getType(), token.getExpiry_date(), token.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public Optional<User> findByEmail(String email) {

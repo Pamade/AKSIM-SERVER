@@ -1,4 +1,4 @@
-package SERVER.SERVER;
+package SERVER.SERVER.config;
 
 import SERVER.SERVER.JWTConfig.JwtAuthenticationFilter;
 import jakarta.servlet.Filter;

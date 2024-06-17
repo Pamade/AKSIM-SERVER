@@ -34,6 +34,6 @@ build/
 
 # Ignore DatasourceConfig class
 src/main/java/SERVER/SERVER/DataSourceConfig.java
-src/main/java/SERVER/SERVER/MailConfig.java.java
-src/main/java/SERVER/SERVER/EmailServiceImpl.java.java.java
+src/main/java/SERVER/SERVER/MailConfig.java
+src/main/java/SERVER/SERVER/EmailServiceImpl.java
 src/main/java/resources/application.properties

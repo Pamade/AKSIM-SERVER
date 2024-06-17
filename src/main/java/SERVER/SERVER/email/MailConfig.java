@@ -1,4 +1,4 @@
-package SERVER.SERVER;
+package SERVER.SERVER.email;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package SERVER.SERVER;
+package SERVER.SERVER.config;
 
 import org.springframework.context.annotation.Configuration;
 

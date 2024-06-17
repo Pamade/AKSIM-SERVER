@@ -1,4 +1,4 @@
-package SERVER.SERVER;
+package SERVER.SERVER.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
