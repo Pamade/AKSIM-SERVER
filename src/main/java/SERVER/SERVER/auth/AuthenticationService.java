@@ -11,7 +11,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -22,14 +24,14 @@ public class AuthenticationService {
     private final UserDAO userDAO;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RegisterValidation registerValidation;
+    private final Validation validation;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        registerValidation.setEmail(request.getEmail());
-        registerValidation.setPassword(request.getPassword());
-        registerValidation.setRepeatPassword(request.getRepeatPassword());
+        validation.setEmail(request.getEmail());
+        validation.setPassword(request.getPassword());
+        validation.setRepeatPassword(request.getRepeatPassword());
 
-        Optional<List<String>> validationErrors = registerValidation.validationErrors(userDAO);
+        Optional<List<String>> validationErrors = validation.authenticate(userDAO);
 
         if (validationErrors.isPresent()) {
             return AuthenticationResponse.builder().errors(validationErrors.get()).build();
@@ -58,21 +60,37 @@ public class AuthenticationService {
     }
 
 
-    public String forgotPassword(String email){
-        User user = userDAO.findByEmail(email).orElseThrow();
-        final int minutesToExpire = 5;
-        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(minutesToExpire);
-        String tokenValue = RandomStringGenerator.generateRandomString(10);
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request){
+        List<String> errors = new ArrayList<>();
+        try {
+            User user = userDAO.findByEmail(request.getEmail()).orElseThrow();
+            final int minutesToExpire = 5;
+            LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(minutesToExpire);
+            String tokenValue = RandomStringGenerator.generateRandomString(10);
 
-        Token token = Token.builder().value(tokenValue).type("forgot_password").expiry_date(expiryDate).userId(user.getId()).build();
-        String link = "http://localhost:5173/forgotPassword?token=" + tokenValue;
-        emailService.sendSimpleMessage(user.getEmail(), "Forgot password", "Here is a link to reset your password: " + link );
-        userDAO.assignTokenForUser(token);
-        return "test";
-//        change this test
-                //dodaj token do bazy danych i wyslij emaila, currently
-//              if expiry date > current date ? authenticate and
-//        PasswordResetToken resetToken = new PasswordResetToken(token, user.getId())
+            Token token = Token.builder().value(tokenValue).type("forgot_password").expiry_date(expiryDate).userId(user.getId()).build();
+            String link = "http://localhost:5173/forgotPassword?token=" + tokenValue;
+            emailService.sendSimpleMessage(user.getEmail(), "Forgot password", "Here is a link to reset your password: " + link );
+            userDAO.assignTokenForUser(token);
+        } catch (NoSuchElementException e){
+            errors.add("User not found");
+        } catch (RuntimeException e) {
+            errors.add("An error occured");
+        }
+        if (errors.isEmpty()) {
+            return ForgotPasswordResponse.builder().successMessage("Link for reseting password sent. Check your email").build();
+        }
+        return ForgotPasswordResponse.builder().errors(errors).build();
+    }
+
+    public ForgotPasswordResponse resetPassword(ResetPasswordRequest request) {
+        List<String> errors = new ArrayList<>();
+
+        try {
+            //grab token, check if expiry date is > curr date
+        } catch () {
+
+        }
 
     }
 

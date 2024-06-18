@@ -18,12 +18,15 @@ public class AuthenticationController {
     }
     @PostMapping("authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
     @PostMapping("forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody String email){
-        return ResponseEntity.ok(authenticationService.forgotPassword(email));
+    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody  ForgotPasswordRequest request){
+        return ResponseEntity.ok(authenticationService.forgotPassword(request));
+    }
+    @PostMapping("resetPassword")
+    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request){
+
     }
 
 }

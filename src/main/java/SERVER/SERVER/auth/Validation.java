@@ -3,7 +3,6 @@ package SERVER.SERVER.auth;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterValidation extends RegisterRequest{
+public class Validation extends RegisterRequest{
 
     private final String regexPattern = "^(.+)@(\\S+)$";
     private final int passwordLength  = 6;
@@ -24,7 +23,7 @@ public class RegisterValidation extends RegisterRequest{
     @Setter
     private List<String> errors = new ArrayList<>();
 
-    public Optional<List<String>> validationErrors (UserDAO userDAO) {
+    public Optional<List<String>> authenticate (UserDAO userDAO) {
         errors.clear();
 
         boolean isEmailCorrect = Pattern.compile(regexPattern).matcher(getEmail()).matches() || !getEmail().isBlank();
