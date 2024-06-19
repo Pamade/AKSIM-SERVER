@@ -6,6 +6,7 @@ import SERVER.SERVER.JWTConfig.JwtService;
 import SERVER.SERVER.user.Role;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,7 +70,7 @@ public class AuthenticationService {
             String tokenValue = RandomStringGenerator.generateRandomString(10);
 
             Token token = Token.builder().value(tokenValue).type("forgot_password").expiry_date(expiryDate).userId(user.getId()).build();
-            String link = "http://localhost:5173/forgotPassword?token=" + tokenValue;
+            String link = "http://localhost:5173/resetPassword/" + tokenValue;
             emailService.sendSimpleMessage(user.getEmail(), "Forgot password", "Here is a link to reset your password: " + link );
             userDAO.assignTokenForUser(token);
         } catch (NoSuchElementException e){
@@ -83,15 +84,37 @@ public class AuthenticationService {
         return ForgotPasswordResponse.builder().errors(errors).build();
     }
 
-    public ForgotPasswordResponse resetPassword(ResetPasswordRequest request) {
-        List<String> errors = new ArrayList<>();
+    public ValidateTokenResponse isTokenValid(TokenRequest request) {
+        Optional<Token> tokenOptional = userDAO.findTokenByValue(request);
+        System.out.println(request);
 
-        try {
-            //grab token, check if expiry date is > curr date
-        } catch () {
-
+        System.out.println(tokenOptional);
+        if (tokenOptional.isPresent()) {
+            Token token = tokenOptional.get();
+            LocalDateTime tokenDate = token.getExpiry_date().toLocalDate().atStartOfDay();
+            boolean isDateBeforeExpiration = LocalDateTime.now().isAfter(tokenDate);
+            System.out.println(request.getType() + token.getType() + isDateBeforeExpiration);
+            if (isDateBeforeExpiration && request.getType().equals(token.getType())) {
+                return ValidateTokenResponse.builder().message("Token is valid").success(true).build();
+            }
         }
-
+        return ValidateTokenResponse.builder().message("Token is invalid").success(false).build();
     }
+
+    //get
+//    wyslac geta przy wejsciu na strone z formem
+//    reset on post -> get token value where and its userid
+//    public ValidateTokenForResetingPassword() {}
+//    public ForgotPasswordResponse resetPassword(ResetPasswordRequest request) {
+//        List<String> errors = new ArrayList<>();
+//
+//        try {
+////            i need to take value == but the value is taken from front
+//            //grab token, check if expiry date is > curr date
+//        } catch () {
+//
+//        }
+//
+//    }
 
 }

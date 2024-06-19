@@ -2,6 +2,7 @@ package SERVER.SERVER.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,14 @@ public class AuthenticationController {
     public ResponseEntity<ForgotPasswordResponse> forgotPassword(@RequestBody  ForgotPasswordRequest request){
         return ResponseEntity.ok(authenticationService.forgotPassword(request));
     }
-    @PostMapping("resetPassword")
-    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request){
-
+    @PostMapping("validateToken")
+    public ResponseEntity<ValidateTokenResponse> validateToken(@RequestBody TokenRequest request) {
+        return ResponseEntity.ok(authenticationService.isTokenValid(request));
     }
+
+//    @PostMapping("resetPassword")
+//    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request){
+//
+//    }
 
 }

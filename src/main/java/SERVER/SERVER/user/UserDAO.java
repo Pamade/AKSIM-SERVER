@@ -1,6 +1,7 @@
 package SERVER.SERVER.user;
 
 import SERVER.SERVER.auth.Token;
+import SERVER.SERVER.auth.TokenRequest;
 import SERVER.SERVER.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 
@@ -51,19 +53,39 @@ public class UserDAO {
     }
 
     public void assignTokenForUser(Token token) {
-//        INSERT INTO tokens VALUES (1, 'asdasd', 'forgotPassword', CURRENT_DATE(), 1);
-
-//        INSERT INTO tokens (value, type, expiry_date, user_id) VALUES ('asdasd', 'forgotPassword', CURRENT_DATE(), 1);
-
         String sql = "INSERT INTO tokens (value, type, expiry_date, user_id) VALUES (?, ?, ?, ?)";
         try {
             jdbcTemplate.update(sql, token.getValue(), token.getType(), token.getExpiry_date(), token.getUserId());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
+    public Optional<Token> findTokenByValue(TokenRequest request) {
+        String sql = "SELECT * FROM tokens WHERE value = ?";
+        try {
+            Token tokenFind = jdbcTemplate.queryForObject(sql, new TokenRowMapper(), request.getValue());
+            return Optional.ofNullable(tokenFind);
+        } catch(Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public static class TokenRowMapper implements RowMapper<Token> {
+        @Override
+        public Token mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Token token = new Token();
+            token.setId(rs.getLong("id"));
+            token.setUserId(rs.getLong("user_id"));
+            token.setType(rs.getString("type"));
+            token.setValue(rs.getString("value"));
+            token.setExpiry_date(rs.getDate("expiry_date").toLocalDate().atStartOfDay());
+
+            return token;
+        };
+
+
+    };
 
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
