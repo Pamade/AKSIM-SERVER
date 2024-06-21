@@ -7,8 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class ValidateTokenResponse {
-    @JsonProperty("success")
-    private boolean success;
-    @JsonProperty("error")
-    private String message;
+    @JsonProperty("isTokenValid")
+    private boolean isTokenValid;
 }

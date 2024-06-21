@@ -95,10 +95,10 @@ public class AuthenticationService {
             boolean isDateBeforeExpiration = LocalDateTime.now().isAfter(tokenDate);
             System.out.println(request.getType() + token.getType() + isDateBeforeExpiration);
             if (isDateBeforeExpiration && request.getType().equals(token.getType())) {
-                return ValidateTokenResponse.builder().message("Token is valid").success(true).build();
+                return ValidateTokenResponse.builder().isTokenValid(true).build();
             }
         }
-        return ValidateTokenResponse.builder().message("Token is invalid").success(false).build();
+        return ValidateTokenResponse.builder().isTokenValid(false).build();
     }
 
     //get

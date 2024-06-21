@@ -13,7 +13,7 @@ import java.util.List;
 public class ForgotPasswordResponse {
     @JsonProperty("errors")
     private List<String> errors;
-    @JsonProperty("success")
+    @JsonProperty("successMessage")
     private String successMessage;
 
 }
