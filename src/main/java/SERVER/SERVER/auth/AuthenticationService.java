@@ -9,7 +9,9 @@ import SERVER.SERVER.user.UserDAO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,15 +51,27 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        User user = userDAO.findByEmail(request.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().accessToken(jwtToken).build();
+        ArrayList<String> errors = new ArrayList<>();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            User user = userDAO.findByEmail(request.getEmail()).orElseThrow();
+            var jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder().accessToken(jwtToken).build();
+        } catch (BadCredentialsException e) {
+            errors.add("Invalid credentials");
+        }
+         catch (AuthenticationException e) {
+            errors.add("Authentication Failed");
+         }
+        catch (Exception e) {
+            errors.add("Internal server error");
+        }
+        return AuthenticationResponse.builder().errors(errors).build();
     }
 
 
@@ -86,14 +100,13 @@ public class AuthenticationService {
 
     public ValidateTokenResponse isTokenValid(TokenRequest request) {
         Optional<Token> tokenOptional = userDAO.findTokenByValue(request);
-        System.out.println(request);
-
-        System.out.println(tokenOptional);
         if (tokenOptional.isPresent()) {
             Token token = tokenOptional.get();
-            LocalDateTime tokenDate = token.getExpiry_date().toLocalDate().atStartOfDay();
-            boolean isDateBeforeExpiration = LocalDateTime.now().isAfter(tokenDate);
-            System.out.println(request.getType() + token.getType() + isDateBeforeExpiration);
+            System.out.println(token);
+            LocalDateTime tokenDate = token.getExpiry_date();
+            boolean isDateBeforeExpiration = LocalDateTime.now().isBefore(tokenDate);
+            System.out.println(tokenDate);
+            System.out.println("Token date");
             if (isDateBeforeExpiration && request.getType().equals(token.getType())) {
                 return ValidateTokenResponse.builder().isTokenValid(true).build();
             }

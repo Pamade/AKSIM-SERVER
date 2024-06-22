@@ -79,7 +79,7 @@ public class UserDAO {
             token.setUserId(rs.getLong("user_id"));
             token.setType(rs.getString("type"));
             token.setValue(rs.getString("value"));
-            token.setExpiry_date(rs.getDate("expiry_date").toLocalDate().atStartOfDay());
+            token.setExpiry_date(rs.getTimestamp("expiry_date").toLocalDateTime());
 
             return token;
         };
