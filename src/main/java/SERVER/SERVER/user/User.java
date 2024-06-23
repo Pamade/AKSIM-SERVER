@@ -39,9 +39,6 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(Role.USER.name()));
     }
 
-    // Getters and setters for password
-
-
     @Override
     public String getUsername() {
         return email;

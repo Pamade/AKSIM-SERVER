@@ -1,25 +1,19 @@
 package SERVER.SERVER.user;
 
+import SERVER.SERVER.auth.ResetPasswordRequest;
 import SERVER.SERVER.auth.Token;
 import SERVER.SERVER.auth.TokenRequest;
-import SERVER.SERVER.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Optional;
 
 
@@ -32,24 +26,14 @@ public class UserDAO {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public User addUser(User user){
-
+    String hashPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-        String hashedPassword = encoder.encode(user.getPassword());
-        String email = user.getEmail();
+        return encoder.encode(password);
+    };
+    public void addUser(User user){
+        String hashedPassword = hashPassword(user.getPassword());
         String sql = "INSERT INTO users (email, password) VALUES (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, email);
-                ps.setString(2, hashedPassword);
-                return ps;
-            }
-        }, keyHolder);
-        user.setId(keyHolder.getKey().longValue());
-        return user;
+        jdbcTemplate.update(sql, user.getEmail(), hashedPassword);
     }
 
     public void assignTokenForUser(Token token) {
@@ -58,6 +42,7 @@ public class UserDAO {
             jdbcTemplate.update(sql, token.getValue(), token.getType(), token.getExpiry_date(), token.getUserId());
         } catch (Exception e) {
             e.printStackTrace();
+
         }
     }
 
@@ -87,10 +72,22 @@ public class UserDAO {
 
     };
 
+    public void resetPassword(ResetPasswordRequest resetPasswordRequest) throws SQLException{
+        String sql = "UPDATE users u JOIN tokens t ON u.id = t.user_id SET u.password = ? WHERE t.value = ? AND t.type = ?";
+        String hashedPassword = hashPassword(resetPasswordRequest.getPassword());
+        String tokenValue = resetPasswordRequest.getTokenValue();
+        String tokenType = resetPasswordRequest.getTokenType();
+        try {
+            jdbcTemplate.update(sql, hashedPassword, tokenValue, tokenType );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
         try {
-            User user = jdbcTemplate.queryForObject(sql, new Object[]{email}, new UserRowMapper());
+            User user = jdbcTemplate.queryForObject(sql, new UserRowMapper(), email);
             return Optional.of(user);
         } catch (Exception e) {
             return Optional.empty();

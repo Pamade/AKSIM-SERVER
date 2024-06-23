@@ -30,9 +30,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.isTokenValid(request));
     }
 
-//    @PostMapping("resetPassword")
-//    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request){
-//
-//    }
+    @PostMapping("resetPassword")
+    public ResponseEntity<ForgotPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request){
+        return ResponseEntity.ok(authenticationService.resetPassword(request));
+    }
 
 }

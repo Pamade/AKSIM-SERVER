@@ -13,6 +13,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,20 +116,22 @@ public class AuthenticationService {
         return ValidateTokenResponse.builder().isTokenValid(false).build();
     }
 
-    //get
-//    wyslac geta przy wejsciu na strone z formem
-//    reset on post -> get token value where and its userid
-//    public ValidateTokenForResetingPassword() {}
-//    public ForgotPasswordResponse resetPassword(ResetPasswordRequest request) {
-//        List<String> errors = new ArrayList<>();
-//
-//        try {
-////            i need to take value == but the value is taken from front
-//            //grab token, check if expiry date is > curr date
-//        } catch () {
-//
-//        }
-//
-//    }
+    public ForgotPasswordResponse resetPassword(ResetPasswordRequest request) {
+        List<String> errors = new ArrayList<>();
+        Optional<List<String>> errorsPassword = validation.passwordValidation(request.getPassword(), request.getRepeatPassword());
+        errorsPassword.ifPresent(errors::addAll);
+
+        try {
+            userDAO.resetPassword(request);
+        } catch (AuthenticationException e) {
+            errors.add("Authenctication problem");
+        } catch (RuntimeException | SQLException e) {
+            errors.add("Server error");
+        }
+
+        return errors.isEmpty() ? ForgotPasswordResponse.builder().successMessage("Password changed").build() :
+                ForgotPasswordResponse.builder().errors(errors).build();
+
+    }
 
 }

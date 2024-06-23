@@ -13,4 +13,8 @@ public class ResetPasswordRequest {
     private String password;
     @JsonProperty("repeatPassword")
     private String repeatPassword;
+    @JsonProperty("tokenValue")
+    private String tokenValue;
+    @JsonProperty("tokenType")
+    private String tokenType;
 }

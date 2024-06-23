@@ -12,39 +12,34 @@ import java.util.regex.Pattern;
 
 
 @Component
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class Validation extends RegisterRequest{
 
-    private final String regexPattern = "^(.+)@(\\S+)$";
-    private final int passwordLength  = 6;
-
-    @Setter
-    private List<String> errors = new ArrayList<>();
-
+    public Optional<List<String>> passwordValidation(String password, String repeatPassword) {
+        int passwordLength = 6;
+        List<String> errors = new ArrayList<>();
+        if (!password.equals(repeatPassword)) {
+            errors.add("Passwords do not match");
+        }
+        if (passwordLength > password.length()) {
+            errors.add("Password must contain at least 6 characters");
+        }
+        return Optional.ofNullable(errors.isEmpty() ? null : errors);
+    }
     public Optional<List<String>> authenticate (UserDAO userDAO) {
-        errors.clear();
-
+        List<String> errors = new ArrayList<>();
+        String regexPattern = "^(.+)@(\\S+)$";
         boolean isEmailCorrect = Pattern.compile(regexPattern).matcher(getEmail()).matches() || !getEmail().isBlank();
-
         Optional<User> findUserByEmail = userDAO.findByEmail(getEmail());
+        Optional<List<String>> passwordErrors = passwordValidation(getPassword(), getRepeatPassword());
 
         if (findUserByEmail.isPresent()) {
             errors.add("User with this email exist");
         }
-
-        if (!getPassword().equals(getRepeatPassword())) {
-            errors.add("Passwords do not match");
-        }
-
-        if (passwordLength > getPassword().length()) {
-            errors.add("Password must contain at least 6 characters");
-        }
-
         if (!isEmailCorrect) {
             errors.add("Email is not correct");
         }
+        passwordErrors.ifPresent(errors::addAll);
         return Optional.ofNullable(errors.isEmpty() ? null : errors);
     }
 
