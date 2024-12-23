@@ -22,8 +22,12 @@ public class User implements UserDetails {
 
     @Setter
     private String password;
-
+    @Setter
+    @Getter
     private Role role;
+
+    public User(String username) {
+    }
 
     public Long getId() {
         return id;
