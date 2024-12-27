@@ -26,9 +26,6 @@ public class User implements UserDetails {
     @Getter
     private Role role;
 
-    public User(String username) {
-    }
-
     public Long getId() {
         return id;
     }
