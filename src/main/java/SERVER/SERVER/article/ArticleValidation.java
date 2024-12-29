@@ -1,23 +1,45 @@
 package SERVER.SERVER.article;
 
+import SERVER.SERVER.user.User;
+import SERVER.SERVER.user.UserDAO;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 @Service
+@AllArgsConstructor
 public class ArticleValidation extends Article{
-    List<String> errors = new ArrayList<>();
-    public Optional<List<String>> validate(Article article){
-        System.out.println(article.toString() + "To jest article");
-        if (article.getTitle().length() < 3) {
-            errors.add("Title of article must contain at least 3 letters");
+    private UserDAO userDao;
+    public Optional<Map<String, String>> validate(Article article){
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (article.getTitle() == null || article.getTitle().length() < 3) {
+            errors.put("title", "Title of article must contain at least 3 letters");
         }
-        if (article.getContent().length() < 20) {
-            errors.add("Content must be longer");
+        if (article.getContent() == null || article.getContent().length() < 20) {
+            errors.put("content", "Content must be longer");
         }
 //        errors.add("Content must be longer");
         return Optional.ofNullable(errors.isEmpty() ? null : errors);
+    }
+    public Map<String, String> validate() {
+        Map<String, String> result = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        System.out.println(username);
+        Optional<User> userOptional = userDao.findByEmail(username);  // userDao should return Optional<User>
 
+        if (userOptional.isEmpty()) {
+            result.put("error", "Wrong user");
+        } else {
+            User user = userOptional.get();
+            result.put("userId", String.valueOf(user.getId()));
+        }
+
+        return result;
     }
 }

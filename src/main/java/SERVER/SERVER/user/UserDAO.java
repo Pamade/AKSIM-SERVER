@@ -35,7 +35,6 @@ public class UserDAO {
         String sql = "INSERT INTO users (email, password) VALUES (?, ?)";
         jdbcTemplate.update(sql, user.getEmail(), hashedPassword);
     }
-
     public void assignTokenForUser(Token token) {
         String sql = "INSERT INTO tokens (value, type, expiry_date, user_id) VALUES (?, ?, ?, ?)";
         try {
@@ -87,10 +86,9 @@ public class UserDAO {
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
         try {
-            User user = jdbcTemplate.queryForObject(sql, new UserRowMapper(), email);
-            return Optional.of(user);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[]{email}, new UserRowMapper()));
         } catch (Exception e) {
-            return Optional.empty();
+            return Optional.empty(); // return null if user is not found
         }
     }
 

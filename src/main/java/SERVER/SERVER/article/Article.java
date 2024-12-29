@@ -23,7 +23,7 @@ public class Article {
     private String imageLink;
     @JsonProperty("creationDate")
     private LocalDateTime creationDate;
-    @JsonProperty("userid")
+    @JsonProperty("userId")
     private long userId;
 
 }

@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 public class ArticleResponse {
     @JsonProperty("success_message")
     String successMessage;
     @JsonProperty("errors")
-    List<String> errors;
+    Map<String, String> errors;
 }
