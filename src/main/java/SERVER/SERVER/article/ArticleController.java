@@ -1,5 +1,6 @@
 package SERVER.SERVER.article;
 
+import SERVER.SERVER.service.FileSystemStorageService;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -20,12 +18,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ArticleController {
     private ArticleService articleService;
-    private UserDAO userDao;
     @PostMapping("/add-article")
-    public ResponseEntity<ArticleResponse> addArticle(@RequestBody Article article) {
-
-
-//        Long userId = user.getId();
+    public ResponseEntity<ArticleResponse> addArticle(@ModelAttribute Article article) {
         return ResponseEntity.ok(articleService.addArticle(article));
     }
 }

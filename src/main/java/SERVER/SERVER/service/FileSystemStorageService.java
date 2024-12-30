@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @Service
@@ -39,12 +40,14 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file){
+    public String store(MultipartFile file){
+        String id = String.valueOf(System.currentTimeMillis());
+
         try {
             if (file.isEmpty()) {
                 throw  new StorageException("Failed to store empty file");
             }
-            Path destinationFile = this.rootLocation.resolve(Paths.get(file.getOriginalFilename())).normalize().toAbsolutePath();
+            Path destinationFile = this.rootLocation.resolve(Paths.get(file.getOriginalFilename()) + " - " + id).normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())){
                 throw new StorageException("Cannot store file outside current directory");
             }
@@ -52,6 +55,7 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
+            return "https://localhost:8080/uploads/" +  Paths.get(file.getOriginalFilename()) + " - " + id;
         } catch (IOException e) {
             throw new StorageException("Failed to store file", e);
         }

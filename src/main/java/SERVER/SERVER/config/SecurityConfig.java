@@ -33,6 +33,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((auth) -> {
             auth.requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers("/api/user/**").hasRole("USER")
                     .anyRequest()
                     .authenticated();
