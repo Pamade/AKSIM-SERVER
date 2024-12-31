@@ -6,10 +6,13 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,20 +45,26 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public String store(MultipartFile file){
         String id = String.valueOf(System.currentTimeMillis());
+        String originalFilename = file.getOriginalFilename();
+
+        String fileNameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        String newFilename = fileNameWithoutExtension + "-" + id + fileExtension;
 
         try {
             if (file.isEmpty()) {
                 throw  new StorageException("Failed to store empty file");
             }
-            Path destinationFile = this.rootLocation.resolve(Paths.get(file.getOriginalFilename()) + " - " + id).normalize().toAbsolutePath();
-            if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())){
+            Path destinationFile = this.rootLocation.resolve(newFilename);
+            System.out.println(destinationFile);
+            if (!destinationFile.getParent().equals(this.rootLocation)){
                 throw new StorageException("Cannot store file outside current directory");
             }
             try(InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return "https://localhost:8080/uploads/" +  Paths.get(file.getOriginalFilename()) + " - " + id;
+            return "https://localhost:8080/uploads/" +  newFilename;
         } catch (IOException e) {
             throw new StorageException("Failed to store file", e);
         }
@@ -81,6 +90,7 @@ public class FileSystemStorageService implements StorageService {
     public Resource loadAsResource(String filename) {
         try {
             Path file = load(filename);
+
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
