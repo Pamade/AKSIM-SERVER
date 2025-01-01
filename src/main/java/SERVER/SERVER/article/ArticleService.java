@@ -36,18 +36,12 @@ public class ArticleService {
         } else {
             userId = Long.parseLong(userValidate.get("userId"));
         }
-        if (article.getImageFile() != null) {
-            MultipartFile file = article.getImageFile();
-            String path = storageService.store(file);
-            article.setImageLink(path);
-        }
-
         if (articleErrors.isPresent()) {
             return ArticleResponse.builder().errors(articleErrors.get()).build();
         }
-//        article.setImageLink(article);
         articleDao.addArticle(article, userId);
         return ArticleResponse.builder().successMessage("Article added").build();
     }
+
 
 }

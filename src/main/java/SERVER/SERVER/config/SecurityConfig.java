@@ -35,6 +35,7 @@ public class SecurityConfig {
             auth.requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers("/api/user/**").hasRole("USER")
+                    .requestMatchers("/api/content/**").permitAll()
                     .anyRequest()
                     .authenticated();
 

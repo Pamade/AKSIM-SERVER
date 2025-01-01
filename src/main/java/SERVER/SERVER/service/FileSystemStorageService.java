@@ -1,5 +1,6 @@
 package SERVER.SERVER.service;
 
+import SERVER.SERVER.utils.RenameFileWithExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -44,12 +45,12 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public String store(MultipartFile file){
-        String id = String.valueOf(System.currentTimeMillis());
+//        String id = String.valueOf(System.currentTimeMillis());
         String originalFilename = file.getOriginalFilename();
 
-        String fileNameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-        String newFilename = fileNameWithoutExtension + "-" + id + fileExtension;
+//        String fileNameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
+//        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        String newFilename = RenameFileWithExtension.rename(originalFilename);
 
         try {
             if (file.isEmpty()) {
