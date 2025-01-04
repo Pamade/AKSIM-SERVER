@@ -45,16 +45,12 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public String store(MultipartFile file){
-//        String id = String.valueOf(System.currentTimeMillis());
         String originalFilename = file.getOriginalFilename();
-
-//        String fileNameWithoutExtension = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
-//        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
         String newFilename = RenameFileWithExtension.rename(originalFilename);
 
         try {
             if (file.isEmpty()) {
-                throw  new StorageException("Failed to store empty file");
+                throw new StorageException("Failed to store empty file");
             }
             Path destinationFile = this.rootLocation.resolve(newFilename);
             System.out.println(destinationFile);
@@ -65,7 +61,7 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return "https://localhost:8080/uploads/" +  newFilename;
+            return "http://localhost:8080/uploads/" +  newFilename;
         } catch (IOException e) {
             throw new StorageException("Failed to store file", e);
         }

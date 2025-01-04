@@ -36,6 +36,13 @@ public class ArticleService {
         } else {
             userId = Long.parseLong(userValidate.get("userId"));
         }
+        System.out.println(article.getImageFile());
+        if (article.getImageFile() != null) {
+            MultipartFile file = article.getImageFile();
+            String path = storageService.store(file);
+            article.setImageLink(path);
+        }
+
         if (articleErrors.isPresent()) {
             return ArticleResponse.builder().errors(articleErrors.get()).build();
         }

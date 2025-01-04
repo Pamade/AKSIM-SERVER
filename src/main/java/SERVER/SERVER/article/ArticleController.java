@@ -40,7 +40,6 @@ public class ArticleController {
     public ResponseEntity<List<UserArticle>> getAllArticles() {
         Optional<List<UserArticle>> optionalArticles = articleDao.getAllArticles();
         if (optionalArticles.isPresent()) {
-            System.out.println("CWEL");
             return ResponseEntity.ok(optionalArticles.get());
         } else return ResponseEntity.noContent().build();
 
