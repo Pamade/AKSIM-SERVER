@@ -32,21 +32,18 @@ public class ArticleDao {
     public Optional<List<UserArticle>> getAllArticles() {
         String sql = "SELECT * FROM articles";
         try {
-            List<UserArticle> articles = jdbcTemplate.query(sql, new RowMapper<>() {
-                @Override
-                public UserArticle mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    UserArticle article = new UserArticle();
-                    article.setId(rs.getLong("id"));
-                    article.setTitle(rs.getString("title"));
-                    article.setContent(rs.getString("content"));
-                    article.setDescription(rs.getString("description"));
-                    article.setImageLink(rs.getString("imageLink"));
-                    article.setCreationDate(rs.getDate("creationDate"));
-                    article.setUserID(rs.getLong("userId"));
-                    return article;
-                }
-            });
+            List<UserArticle> articles = jdbcTemplate.query(sql, new UserArticleRowMapper());
             return articles.isEmpty() ? Optional.empty() : Optional.of(articles);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+    public Optional<UserArticle> getArticle(long id){
+        String sql = "SELECT * FROM article where id = " + id;
+        try {
+            UserArticle article = jdbcTemplate.queryForObject(sql, new UserArticleRowMapper());
+            return Optional.of(article);
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

@@ -42,7 +42,13 @@ public class ArticleController {
         if (optionalArticles.isPresent()) {
             return ResponseEntity.ok(optionalArticles.get());
         } else return ResponseEntity.noContent().build();
-
+    }
+    @GetMapping("/api/content/get-article/{id}")
+    public ResponseEntity<UserArticle> getArticle(@PathVariable long id){
+        Optional<UserArticle> optionalArticle = articleDao.getArticle(id);
+        if (optionalArticle.isPresent()) {
+            return ResponseEntity.ok(optionalArticle.get());
+        } else return ResponseEntity.noContent().build();
     }
 
 }
