@@ -31,10 +31,14 @@ public class Validation extends RegisterRequest{
         String regexPattern = "^(.+)@(\\S+)$";
         boolean isEmailCorrect = Pattern.compile(regexPattern).matcher(getEmail()).matches() || !getEmail().isBlank();
         Optional<User> findUserByEmail = userDAO.findByEmail(getEmail());
+        Optional<User> findUserByName = userDAO.findByName(getName());
         Optional<List<String>> passwordErrors = passwordValidation(getPassword(), getRepeatPassword());
 
         if (findUserByEmail.isPresent()) {
             errors.add("User with this email exist");
+        }
+        if (findUserByName.isPresent()) {
+            errors.add("User with this name exist");
         }
         if (!isEmailCorrect) {
             errors.add("Email is not correct");

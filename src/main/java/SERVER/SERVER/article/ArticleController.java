@@ -1,17 +1,9 @@
 package SERVER.SERVER.article;
 
 import SERVER.SERVER.service.FileSystemStorageService;
-import SERVER.SERVER.user.User;
-import SERVER.SERVER.user.UserDAO;
 import SERVER.SERVER.utils.RenameFileWithExtension;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

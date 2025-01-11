@@ -32,8 +32,8 @@ public class UserDAO {
     };
     public void addUser(User user){
         String hashedPassword = hashPassword(user.getPassword());
-        String sql = "INSERT INTO users (email, password) VALUES (?, ?)";
-        jdbcTemplate.update(sql, user.getEmail(), hashedPassword);
+        String sql = "INSERT INTO users (email, name, password) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, user.getEmail(), user.getName(), hashedPassword);
     }
     public void assignTokenForUser(Token token) {
         String sql = "INSERT INTO tokens (value, type, expiry_date, user_id) VALUES (?, ?, ?, ?)";
@@ -92,14 +92,24 @@ public class UserDAO {
         }
     }
 
+    public Optional<User> findByName(String name) {
+        String sql = "SELECT * FROM users WHERE name = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[]{name}, new UserRowMapper()));
+        } catch (Exception e) {
+            return Optional.empty(); // return null if user is not found
+        }
+    }
+
     private static final class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             User user = new User();
             user.setId(rs.getLong("id"));
+            user.setName(rs.getString("name"));
             user.setEmail(rs.getString("email"));
             user.setPassword(rs.getString("password"));
-            // Map other fields if necessary
+
             return user;
         }
     }

@@ -15,5 +15,6 @@ import java.util.List;
 public class RegisterRequest {
     private String email;
     private String password;
+    private String name;
     private String repeatPassword;
 }

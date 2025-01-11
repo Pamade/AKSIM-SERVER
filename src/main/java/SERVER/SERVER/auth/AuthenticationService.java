@@ -33,6 +33,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         validation.setEmail(request.getEmail());
+        validation.setName(request.getName());
         validation.setPassword(request.getPassword());
         validation.setRepeatPassword(request.getRepeatPassword());
 
@@ -44,6 +45,7 @@ public class AuthenticationService {
 
         User user = User.builder()
                 .email(request.getEmail())
+                .name(request.getName())
                 .password(request.getPassword())
                 .role(Role.USER).build();
 

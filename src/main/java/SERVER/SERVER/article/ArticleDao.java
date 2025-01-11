@@ -40,7 +40,7 @@ public class ArticleDao {
         }
     }
     public Optional<UserArticle> getArticle(long id){
-        String sql = "SELECT * FROM article where id = " + id;
+        String sql = "SELECT * FROM articles where id = " + id;
         try {
             UserArticle article = jdbcTemplate.queryForObject(sql, new UserArticleRowMapper());
             return Optional.of(article);
