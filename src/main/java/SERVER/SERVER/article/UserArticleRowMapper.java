@@ -16,6 +16,7 @@ public class UserArticleRowMapper implements RowMapper<UserArticle> {
         article.setDescription(rs.getString("description"));
         article.setImageLink(rs.getString("imageLink"));
         article.setCreationDate(rs.getDate("creationDate"));
+        article.setUserNameID(rs.getString("userName"));
         article.setUserID(rs.getLong("userId"));
         return article;
     }

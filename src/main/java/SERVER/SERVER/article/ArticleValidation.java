@@ -30,7 +30,6 @@ public class ArticleValidation extends Article{
         Map<String, String> result = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        System.out.println(username);
         Optional<User> userOptional = userDao.findByEmail(username);  // userDao should return Optional<User>
 
         if (userOptional.isEmpty()) {
@@ -38,6 +37,7 @@ public class ArticleValidation extends Article{
         } else {
             User user = userOptional.get();
             result.put("userId", String.valueOf(user.getId()));
+            result.put("username", user.getName());
         }
 
         return result;

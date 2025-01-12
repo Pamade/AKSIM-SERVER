@@ -27,6 +27,7 @@ public class ArticleService {
     private FileSystemStorageService storageService;
     public ArticleResponse addArticle(Article article){
         long userId;
+        String userName;
         Optional<Map<String, String>> articleErrors = articleValidation.validate(article);
 
         Map<String, String> userValidate = articleValidation.validate();
@@ -35,8 +36,10 @@ public class ArticleService {
             return ArticleResponse.builder().errors(userValidate).build();
         } else {
             userId = Long.parseLong(userValidate.get("userId"));
+            userName = userValidate.get("username");
         }
-        System.out.println(article.getImageFile());
+        System.out.println(userName);
+
         if (article.getImageFile() != null) {
             MultipartFile file = article.getImageFile();
             String path = storageService.store(file);
@@ -46,7 +49,7 @@ public class ArticleService {
         if (articleErrors.isPresent()) {
             return ArticleResponse.builder().errors(articleErrors.get()).build();
         }
-        articleDao.addArticle(article, userId);
+        articleDao.addArticle(article, userId, userName);
         return ArticleResponse.builder().successMessage("Article added").build();
     }
 
