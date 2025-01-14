@@ -20,6 +20,10 @@ public class ArticleValidation extends Article{
         if (article.getTitle() == null || article.getTitle().length() < 3) {
             errors.put("title", "Title of article must contain at least 3 letters");
         }
+        assert article.getTitle() != null;
+        if (article.getTitle().length() > 255) {
+            errors.put("title", "Article Title too long");
+        }
         if (article.getContent() == null || article.getContent().length() < 20) {
             errors.put("content", "Content must be longer");
         }

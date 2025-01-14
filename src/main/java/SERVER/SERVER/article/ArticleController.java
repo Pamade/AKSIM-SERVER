@@ -28,11 +28,25 @@ public class ArticleController {
         storageService.store(file);
         return "http://localhost:8080/uploads/" + newFilename;
     }
+
+    @DeleteMapping("/api/user/remove-article/{articleID}")
+    public ResponseEntity<String> removeArticle(@PathVariable int articleID) {
+        return ResponseEntity.ok(articleDao.removeArticle(articleID));
+    }
+
     @GetMapping("/api/content/get-articles")
     public ResponseEntity<List<UserArticle>> getAllArticles() {
         Optional<List<UserArticle>> optionalArticles = articleDao.getAllArticles();
         if (optionalArticles.isPresent()) {
             return ResponseEntity.ok(optionalArticles.get());
+        } else return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/api/content/get-articles/{name}")
+    public ResponseEntity<List<UserArticle>> getAllArticlesByUserEmail(@PathVariable String name){
+        Optional<List<UserArticle>> optionalUserArticles = articleDao.getAllArticles(name);
+        if (optionalUserArticles.isPresent()) {
+            return ResponseEntity.ok(optionalUserArticles.get());
         } else return ResponseEntity.noContent().build();
     }
     @GetMapping("/api/content/get-article/{id}")
@@ -42,5 +56,7 @@ public class ArticleController {
             return ResponseEntity.ok(optionalArticle.get());
         } else return ResponseEntity.noContent().build();
     }
+
+
 
 }

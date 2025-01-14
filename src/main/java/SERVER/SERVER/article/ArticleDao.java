@@ -1,5 +1,6 @@
 package SERVER.SERVER.article;
 
+import SERVER.SERVER.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -40,6 +41,18 @@ public class ArticleDao {
             return Optional.empty();
         }
     }
+
+    public Optional<List<UserArticle>> getAllArticles(String name) {
+        String sql = "SELECT * from articles where userName = ?";
+        System.out.println(name);
+        try {
+            List<UserArticle> articles = jdbcTemplate.query(sql, new Object[]{name}, new UserArticleRowMapper());
+            return articles.isEmpty() ? Optional.empty() : Optional.of(articles);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
     public Optional<UserArticle> getArticle(long id){
         String sql = "SELECT * FROM articles where id = " + id;
         try {
@@ -50,7 +63,14 @@ public class ArticleDao {
             return Optional.empty();
         }
     }
-//    public UserArticle getArticle(long id) {
-//        String sql = "SELECT * from articles where id = " + id;
-//    }
+
+    public String removeArticle(int articleID){
+        String sql = "DELETE FROM articles WHERE ID = " + articleID;
+        try {
+            jdbcTemplate.execute(sql);
+            return "Article removed";
+        } catch (Exception e) {
+            return "Removing article failed";
+        }
+    }
 }
