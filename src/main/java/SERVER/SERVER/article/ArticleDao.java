@@ -31,10 +31,11 @@ public class ArticleDao {
             e.printStackTrace();
         }
     }
-    public Optional<List<UserArticle>> getAllArticles() {
-        String sql = "SELECT * FROM articles";
+    public Optional<List<UserArticle>> getAllArticles(int page, int size) {
+        String sql = "SELECT * FROM articles LIMIT ? OFFSET ?";
         try {
-            List<UserArticle> articles = jdbcTemplate.query(sql, new UserArticleRowMapper());
+            int offset = (page - 1) * size;
+            List<UserArticle> articles = jdbcTemplate.query(sql, new Object[]{size, offset}, new UserArticleRowMapper());
             return articles.isEmpty() ? Optional.empty() : Optional.of(articles);
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,6 +43,15 @@ public class ArticleDao {
         }
     }
 
+    public int getTotalArticlesCount () {
+        String sql = "SELECT COUNT(*) FROM articles";
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
     public Optional<List<UserArticle>> getAllArticles(String name) {
         String sql = "SELECT * from articles where userName = ?";
         System.out.println(name);

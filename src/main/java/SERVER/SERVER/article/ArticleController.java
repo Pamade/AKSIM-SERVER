@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -35,10 +37,21 @@ public class ArticleController {
     }
 
     @GetMapping("/api/content/get-articles")
-    public ResponseEntity<List<UserArticle>> getAllArticles() {
-        Optional<List<UserArticle>> optionalArticles = articleDao.getAllArticles();
+    public ResponseEntity<Map<String, Object>> getAllArticles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Optional<List<UserArticle>> optionalArticles = articleDao.getAllArticles(page, size);
+
+        int totalItems = articleDao.getTotalArticlesCount();
+
         if (optionalArticles.isPresent()) {
-            return ResponseEntity.ok(optionalArticles.get());
+            Map<String, Object> response = new HashMap<>();
+            response.put("results", optionalArticles.get());
+            response.put("totalItems", totalItems);
+            response.put("totalPages", (int) Math.ceil((double) totalItems / size));
+            response.put("currentPage", page);
+            return ResponseEntity.ok(response);
         } else return ResponseEntity.noContent().build();
     }
 
