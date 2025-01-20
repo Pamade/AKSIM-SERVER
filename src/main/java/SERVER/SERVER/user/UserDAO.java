@@ -45,6 +45,16 @@ public class UserDAO {
         }
     }
 
+    public void changeUserName(String newName, String email) {
+        String sql = "UPDATE users SET name = ? WHERE email = ?";
+
+        try {
+            jdbcTemplate.update(sql, newName, email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Optional<Token> findTokenByValue(TokenRequest request) {
         String sql = "SELECT * FROM tokens WHERE value = ?";
         try {

@@ -8,14 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Builder
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CredentialsChangeResponse {
+@Data
+@Builder
+public class CredentialsChangeNameResponse {
     @JsonProperty("errors")
-    private List<String> errors;
-    @JsonProperty("access_token")
-    private String access_token;
-
+    List<String> errors;
+    @JsonProperty("success_message")
+    String successMessage;
 }

@@ -2,15 +2,19 @@ package SERVER.SERVER.credentials_change;
 
 
 import SERVER.SERVER.JWTConfig.JwtService;
+import SERVER.SERVER.auth.Validation;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,29 +24,42 @@ public class CredentialsChangeService {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    public String updateEmail(String oldEmail, String newEmail, String password) {
-        String token = "";
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // email is a name!
+    private final Validation validation;
+    public CredentialsChangeResponse updateEmail(String oldEmail, String newEmail, String password) {
+        List<String> errors = new ArrayList<>();
 
-        Optional<User> optionalUser = userDAO.findByEmail(oldEmail);
-        System.out.println(oldEmail + newEmail + password);
-        if (optionalUser.isPresent()){
-            User user = optionalUser.get();
-            String userPassword = user.getPassword();
-            if (!passwordEncoder.matches(password, userPassword)) {
-                throw new IllegalArgumentException("Invalid password.");
+        try {
+            Optional<User> optionalUser = userDAO.findByEmail(oldEmail);
+            Optional<User> optionalUserInDb = userDAO.findByEmail(newEmail);
+            if (optionalUserInDb.isPresent()) {
+                errors.add("User with that email exists");
+                return CredentialsChangeResponse.builder().errors(errors).build();
             }
-            credentialsChangeDao.changeEmail(oldEmail, newEmail);
 
-            user.setEmail(newEmail);
-            updateSecurityContext(user);
-            token = jwtService.generateToken(user);
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
+                String userPassword = user.getPassword();
+                if (!passwordEncoder.matches(password, userPassword)) {
+                    errors.add("Wrong password");
+                    return CredentialsChangeResponse.builder().errors(errors).build();
+                }
+                credentialsChangeDao.changeEmail(oldEmail, newEmail);
 
+                user.setEmail(newEmail);
+                updateSecurityContext(user);
+                var token = jwtService.generateToken(user);
+
+                return CredentialsChangeResponse.builder().access_token(token).build();
+            }
         }
-        System.out.println(token);
+        catch (BadCredentialsException e) {
+            errors.add("Bad credentials");
+        }
+        catch (Exception e) {
+            errors.add("Server error");
+        }
 
-        return token;
+        return CredentialsChangeResponse.builder().errors(errors).build();
     }
     private void updateSecurityContext(User updatedUser){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -53,5 +70,30 @@ public class CredentialsChangeService {
                 updatedUser.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication((updatedAuth));
+    }
+    public CredentialsChangeNameResponse changeName(String oldName, String newName){
+        List<String> errors = new ArrayList<>();
+
+        if (newName.length() < 6) {
+            errors.add("Name must be longer");
+        } else {
+            try {
+                Optional<User> optionalUser = userDAO.findByName(oldName);
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    userDAO.changeUserName(newName, user.getEmail());
+                    return CredentialsChangeNameResponse.builder().successMessage("Name changed").build();
+                } else {
+                    errors.add("User not found");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                errors.add("Server error");
+            }
+        }
+
+
+        return CredentialsChangeNameResponse.builder().errors(errors).build();
     }
 }
