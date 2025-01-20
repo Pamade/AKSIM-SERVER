@@ -68,6 +68,7 @@ public class AuthenticationService {
             return AuthenticationResponse.builder().accessToken(jwtToken).build();
         } catch (BadCredentialsException e) {
             errors.add("Invalid credentials");
+            e.printStackTrace();
         }
          catch (AuthenticationException e) {
             errors.add("Authentication Failed");

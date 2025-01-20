@@ -1,6 +1,7 @@
 package SERVER.SERVER.credentials_change;
 
 
+import SERVER.SERVER.JWTConfig.JwtService;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
 import lombok.AllArgsConstructor;
@@ -18,35 +19,38 @@ public class CredentialsChangeService {
     private final CredentialsChangeDao credentialsChangeDao;
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
-
-    public void updateEmail(String oldEmail, String newEmail, String password) {
-
+    private final JwtService jwtService;
+    public String updateEmail(String oldEmail, String newEmail, String password) {
+        String token = "";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentEmail = authentication.getName();
         // email is a name!
 
         Optional<User> optionalUser = userDAO.findByEmail(oldEmail);
-
+        System.out.println(oldEmail + newEmail + password);
         if (optionalUser.isPresent()){
             User user = optionalUser.get();
             String userPassword = user.getPassword();
             if (!passwordEncoder.matches(password, userPassword)) {
                 throw new IllegalArgumentException("Invalid password.");
             }
-        } else if (!currentEmail.equals(oldEmail)){
-            throw new IllegalArgumentException("You can only update your own username.");
+            credentialsChangeDao.changeEmail(oldEmail, newEmail);
+
+            user.setEmail(newEmail);
+            updateSecurityContext(user);
+            token = jwtService.generateToken(user);
+
         }
+        System.out.println(token);
 
-        credentialsChangeDao.changeEmail(oldEmail, newEmail);
-
-        updateSecurityContext(newEmail);
+        return token;
     }
-    private void updateSecurityContext(String newEmail){
+    private void updateSecurityContext(User updatedUser){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         Authentication updatedAuth = new UsernamePasswordAuthenticationToken(
-                newEmail,
-                authentication.getCredentials(),
-                authentication.getAuthorities()
+                updatedUser,
+                updatedUser.getPassword(),
+                updatedUser.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication((updatedAuth));
     }
