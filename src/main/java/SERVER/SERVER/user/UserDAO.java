@@ -26,7 +26,7 @@ public class UserDAO {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    String hashPassword(String password) {
+    public String hashPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
         return encoder.encode(password);
     };
@@ -112,6 +112,8 @@ public class UserDAO {
     }
 
 
+
+
     private static final class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -120,7 +122,7 @@ public class UserDAO {
             user.setName(rs.getString("name"));
             user.setEmail(rs.getString("email"));
             user.setPassword(rs.getString("password"));
-
+            user.setProfile_picture_link(rs.getString("profile_picture_link"));
             return user;
         }
     }

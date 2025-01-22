@@ -18,4 +18,14 @@ public class CredentialsChangeDao {
             e.printStackTrace();
         }
     }
+
+    public void changePassword(String userEmail, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE email = ?";
+        try {
+            jdbcTemplate.update(sql, newPassword, userEmail);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -13,4 +13,5 @@ public interface StorageService {
     Resource loadAsResource(String filename);
     void deleteAll();
     Stream<Path> loadAll();
+    String renameFile(MultipartFile file);
 }

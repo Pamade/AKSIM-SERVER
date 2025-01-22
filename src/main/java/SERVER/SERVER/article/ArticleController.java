@@ -25,8 +25,7 @@ public class ArticleController {
     }
     @PostMapping("/api/user/add-image-to-article")
     public String addImageToArticle(@RequestParam("file") MultipartFile file) {
-        String originalFilename = file.getOriginalFilename();
-        String newFilename = RenameFileWithExtension.rename(originalFilename);
+        String newFilename = storageService.renameFile(file);
         storageService.store(file);
         return "http://localhost:8080/uploads/" + newFilename;
     }

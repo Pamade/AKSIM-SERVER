@@ -24,7 +24,9 @@ public class User implements UserDetails {
     @Getter
     @Setter
     private String name;
-
+    @Setter
+    @Getter
+    private String profile_picture_link;
     @Setter
     private String password;
     @Setter

@@ -98,7 +98,10 @@ public class FileSystemStorageService implements StorageService {
             throw new RuntimeException(e);
         }
     }
-
+    public String renameFile(MultipartFile file){
+        String originalFileName = file.getOriginalFilename();
+        return RenameFileWithExtension.rename(originalFileName);
+    }
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());

@@ -23,8 +23,12 @@ public class CredentialsChangeController {
     }
     @PatchMapping("change-name")
     public ResponseEntity<CredentialsChangeNameResponse> changeName(@RequestBody ChangeNameRequest request) {
-        System.out.println("Test");
         return ResponseEntity.ok(credentialsChangeService.changeName(request.getOldName(), request.getNewName()));
+    }
+
+    @PatchMapping("change-password")
+    public ResponseEntity<CredentialsChangeResponse> changePassword(@RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(credentialsChangeService.changePassword(request.getUserEmail(), request.getValidationPassword(), request.getNewPassword()));
     }
 
 
