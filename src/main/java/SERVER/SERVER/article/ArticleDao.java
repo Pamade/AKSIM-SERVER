@@ -32,7 +32,7 @@ public class ArticleDao {
         }
     }
     public Optional<List<UserArticle>> getAllArticles(int page, int size) {
-        String sql = "SELECT * FROM articles LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM articles ORDER BY creationDate DESC LIMIT ? OFFSET ?";
         try {
             int offset = (page - 1) * size;
             List<UserArticle> articles = jdbcTemplate.query(sql, new Object[]{size, offset}, new UserArticleRowMapper());

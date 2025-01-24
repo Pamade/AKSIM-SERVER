@@ -34,13 +34,26 @@ public class ProfileDao {
         }
     }
 
-    public List<UserProfileResponse> findNotLoggedUsers(){
-        String sql = "SELECT name, email, profile_picture_link FROM users LIMIT 5";
+
+    public List<UserProfileResponse> findUsers(){
+        String sql = "SELECT name, email, profile_picture_link FROM users";
         try {
             return jdbcTemplate.query(sql, new UserProfileResponseRowMapper());
         }
         catch (Exception e) {
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
+    public List<UserProfileResponse> findUsers(int limit){
+        String sql = "SELECT name, email, profile_picture_link FROM users LIMIT ?";
+        try {
+            return jdbcTemplate.query(sql, new Object[]{limit}, new UserProfileResponseRowMapper());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
 }

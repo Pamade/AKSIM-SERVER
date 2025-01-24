@@ -33,8 +33,12 @@ public class ProfileController {
 
     @GetMapping("/content/get-users-profiles")
     public ResponseEntity<List<UserProfileResponse>> getUsersProfiles() {
-        return ResponseEntity.ok(profileDao.findNotLoggedUsers());
+        return ResponseEntity.ok(profileDao.findUsers(7));
     }
 
+    @GetMapping("/content/get-users-aksim")
+    public ResponseEntity<List<UserProfileResponse>> getUsersAksim() {
+        return ResponseEntity.ok(profileDao.findUsers());
+    }
 
 }
