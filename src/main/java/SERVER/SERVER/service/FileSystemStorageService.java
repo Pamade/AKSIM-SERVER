@@ -1,6 +1,8 @@
 package SERVER.SERVER.service;
 
 import SERVER.SERVER.utils.RenameFileWithExtension;
+import SERVER.SERVER.utils.URLS;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,12 +24,15 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @Service
+@AllArgsConstructor
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
+    private final URLS urls;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) {
+    public FileSystemStorageService(StorageProperties properties, URLS urls) {
+        this.urls = urls;
         if (properties.getLocation().trim().isEmpty()) {
             throw new StorageException("File upload location can not be Empty");
         }
@@ -61,7 +66,7 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return "http://localhost:8080/uploads/" +  newFilename;
+            return URLS.getSERVER_URL() + "/uploads/" +  newFilename;
         } catch (IOException e) {
             throw new StorageException("Failed to store file", e);
         }

@@ -6,6 +6,7 @@ import SERVER.SERVER.JWTConfig.JwtService;
 import SERVER.SERVER.user.Role;
 import SERVER.SERVER.user.User;
 import SERVER.SERVER.user.UserDAO;
+import SERVER.SERVER.utils.URLS;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final Validation validation;
+    private final URLS urls;
 
     public AuthenticationResponse register(RegisterRequest request) {
         validation.setEmail(request.getEmail());
@@ -89,7 +91,7 @@ public class AuthenticationService {
             String tokenValue = RandomStringGenerator.generateRandomString(10);
 
             Token token = Token.builder().value(tokenValue).type("forgot_password").expiry_date(expiryDate).userId(user.getId()).build();
-            String link = "http://localhost:5173/resetPassword/" + tokenValue;
+            String link = URLS.getCLIENT_URL() +  "/resetPassword/" + tokenValue;
             emailService.sendSimpleMessage(user.getEmail(), "Forgot password", "Here is a link to reset your password: " + link );
             userDAO.assignTokenForUser(token);
         } catch (NoSuchElementException e){

@@ -1,7 +1,7 @@
 package SERVER.SERVER.article;
 
 import SERVER.SERVER.service.FileSystemStorageService;
-import SERVER.SERVER.utils.RenameFileWithExtension;
+import SERVER.SERVER.utils.URLS;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/api/user/")
 @AllArgsConstructor
 public class ArticleController {
     private ArticleService articleService;
     private FileSystemStorageService storageService;
     private ArticleDao articleDao;
+    private URLS urls;
     @PostMapping("/api/user/add-article")
     public ResponseEntity<ArticleResponse> addArticle(@ModelAttribute Article article) {
         return ResponseEntity.ok(articleService.addArticle(article));
@@ -27,7 +27,7 @@ public class ArticleController {
     public String addImageToArticle(@RequestParam("file") MultipartFile file) {
         String newFilename = storageService.renameFile(file);
         storageService.store(file);
-        return "http://localhost:8080/uploads/" + newFilename;
+        return URLS.getSERVER_URL() + "/uploads/" + newFilename;
     }
 
     @DeleteMapping("/api/user/remove-article/{articleID}")
