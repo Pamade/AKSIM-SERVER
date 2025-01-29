@@ -109,11 +109,8 @@ public class AuthenticationService {
         Optional<Token> tokenOptional = userDAO.findTokenByValue(request);
         if (tokenOptional.isPresent()) {
             Token token = tokenOptional.get();
-            System.out.println(token);
             LocalDateTime tokenDate = token.getExpiry_date();
             boolean isDateBeforeExpiration = LocalDateTime.now().isBefore(tokenDate);
-            System.out.println(tokenDate);
-            System.out.println("Token date");
             if (isDateBeforeExpiration && request.getType().equals(token.getType())) {
                 return ValidateTokenResponse.builder().isTokenValid(true).build();
             }

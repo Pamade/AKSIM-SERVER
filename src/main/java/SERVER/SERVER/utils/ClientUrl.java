@@ -7,5 +7,6 @@ import org.springframework.stereotype.Component;
 public class ClientUrl {
     @Getter
     private static final String CLIENT_URL = System.getenv("CLIENT_URL");
-
+    @Getter
+    private static final String SERVER_URL = System.getenv("SERVER_URL");
 }

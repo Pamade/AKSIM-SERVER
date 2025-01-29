@@ -46,4 +46,5 @@ public class ArticleValidation extends Article{
 
         return result;
     }
+
 }

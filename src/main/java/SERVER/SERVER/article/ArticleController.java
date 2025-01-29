@@ -14,28 +14,29 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/")
 public class ArticleController {
     private ArticleService articleService;
     private FileSystemStorageService storageService;
     private ArticleDao articleDao;
     private URLS urls;
-    @PostMapping("/api/user/add-article")
+    @PostMapping("user/add-article")
     public ResponseEntity<ArticleResponse> addArticle(@ModelAttribute Article article) {
         return ResponseEntity.ok(articleService.addArticle(article));
     }
-    @PostMapping("/api/user/add-image-to-article")
+    @PostMapping("user/add-image-to-article")
     public String addImageToArticle(@RequestParam("file") MultipartFile file) {
         String newFilename = storageService.renameFile(file);
         storageService.store(file);
         return URLS.getSERVER_URL() + "/uploads/" + newFilename;
     }
 
-    @DeleteMapping("/api/user/remove-article/{articleID}")
+    @DeleteMapping("user/remove-article/{articleID}")
     public ResponseEntity<String> removeArticle(@PathVariable int articleID) {
         return ResponseEntity.ok(articleDao.removeArticle(articleID));
     }
 
-    @GetMapping("/api/content/get-articles")
+    @GetMapping("content/get-articles")
     public ResponseEntity<Map<String, Object>> getAllArticles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
@@ -54,19 +55,24 @@ public class ArticleController {
         } else return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/api/content/get-articles/{name}")
+    @GetMapping("content/get-articles/{name}")
     public ResponseEntity<List<UserArticle>> getAllArticlesByUserEmail(@PathVariable String name){
         Optional<List<UserArticle>> optionalUserArticles = articleDao.getAllArticles(name);
         if (optionalUserArticles.isPresent()) {
             return ResponseEntity.ok(optionalUserArticles.get());
         } else return ResponseEntity.noContent().build();
     }
-    @GetMapping("/api/content/get-article/{id}")
+    @GetMapping("content/get-article/{id}")
     public ResponseEntity<UserArticle> getArticle(@PathVariable long id){
         Optional<UserArticle> optionalArticle = articleDao.getArticle(id);
         if (optionalArticle.isPresent()) {
             return ResponseEntity.ok(optionalArticle.get());
         } else return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("user/update-article/{id}")
+    public ResponseEntity<ArticleResponse> updateArticle(@ModelAttribute UserArticle userArticle) {
+        return ResponseEntity.ok(articleService.updateArticle(userArticle));
     }
 
 

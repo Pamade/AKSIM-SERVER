@@ -22,7 +22,7 @@ public class ProfileController {
                                 @RequestParam("userEmail") String userEmail){
 
         String generatedName = storageService.renameFile(file);
-        String newFilename = ClientUrl.getCLIENT_URL() + "/uploads/" + generatedName;
+        String newFilename = ClientUrl.getSERVER_URL() + "/uploads/" + generatedName;
         storageService.store(file);
         profileDao.updateUserProfilePicture(userEmail, newFilename);
         return newFilename;

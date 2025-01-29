@@ -16,6 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ArticleDao {
     private JdbcTemplate jdbcTemplate;
+
     public void addArticle(Article article, long userId, String userName){
         String sql = "INSERT INTO articles (title, description, content, creationDate,imageLink,userName, userId) VALUES (?, ?, ?,  ?, ?, ?, ?)";
         try {
@@ -27,6 +28,22 @@ public class ArticleDao {
                     article.getImageLink(),
                     userName,
                     userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateArticle(UserArticle article) {
+        String sql = "UPDATE articles SET title = ?, description = ?, content = ?, imageLink = ? WHERE userName = ? AND id = ? ";
+        try {
+            jdbcTemplate.update(sql,
+                    article.getTitle(),
+                    article.getDescription(),
+                    article.getContent(),
+                    article.getImageLink(),
+                    article.getUserNameID(),
+                    article.getId());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

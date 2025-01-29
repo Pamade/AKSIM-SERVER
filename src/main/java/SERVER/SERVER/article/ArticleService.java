@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -25,20 +22,50 @@ public class ArticleService {
     private ArticleValidation articleValidation;
     private ArticleDao articleDao;
     private FileSystemStorageService storageService;
+
     public ArticleResponse addArticle(Article article){
+
+        Map<String, String> validationResults = validationErrors(article);
+        boolean isValid = validationResults.containsKey("error") || validationResults.containsKey("title") || validationResults.containsKey("content");
+        if (!isValid) {
+            String userId = validationResults.get("userId");
+            String userName = validationResults.get("username");
+            articleDao.addArticle(article, Long.parseLong(userId), userName);
+            return ArticleResponse.builder().successMessage("Article added").build();
+        } else {
+            return ArticleResponse.builder().errors(validationResults).build();
+        }
+    }
+
+    public ArticleResponse updateArticle(UserArticle article) {
+
+        Map<String, String> validationResults = validationErrors(article);
+        boolean hasErrors = validationResults.containsKey("error") || validationResults.containsKey("title") || validationResults.containsKey("content");
+
+        if (!hasErrors) {
+            System.out.println("should go");
+            articleDao.updateArticle(article);
+            return ArticleResponse.builder().successMessage("Article added").build();
+        } else {
+            return ArticleResponse.builder().errors(validationResults).build();
+        }
+    }
+
+    private Map<String, String> validationErrors(Article article){
         long userId;
         String userName;
         Optional<Map<String, String>> articleErrors = articleValidation.validate(article);
-
         Map<String, String> userValidate = articleValidation.validate();
+        Map<String, String> userData = new HashMap<>();
 
         if (userValidate.containsKey("error")) {
-            return ArticleResponse.builder().errors(userValidate).build();
+            return userValidate;
         } else {
             userId = Long.parseLong(userValidate.get("userId"));
             userName = userValidate.get("username");
+            userData.put("userId", String.valueOf(userId));
+            userData.put("username", userName);
         }
-        System.out.println(userName);
 
         if (article.getImageFile() != null) {
             MultipartFile file = article.getImageFile();
@@ -47,11 +74,11 @@ public class ArticleService {
         }
 
         if (articleErrors.isPresent()) {
-            return ArticleResponse.builder().errors(articleErrors.get()).build();
+            return articleErrors.get();
         }
-        articleDao.addArticle(article, userId, userName);
-        return ArticleResponse.builder().successMessage("Article added").build();
+//        articleDao.addArticle(article, userId, userName);
+//        I WANT TO MAKE THE SAME LOGIC BUT HERE USE UPDATE INSTEAD OF ADD
+        return userData;
     }
-
 
 }
